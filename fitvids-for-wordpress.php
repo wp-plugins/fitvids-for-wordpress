@@ -3,7 +3,7 @@
 Plugin Name: FitVids for WordPress
 Plugin URI: http://wordpress.org/extend/plugins/fitvids-for-wordpress/
 Description: This plugin makes videos responsive using the FitVids jQuery plugin on WordPress.
-Version: 1.0
+Version: 1.0.1
 Tags: videos, fitvids, responsive
 Author URI: http://kevindees.cc
 
@@ -70,10 +70,6 @@ class fitvids_wp {
 	   		if($_POST['fitvids_wp_jq'] != '') { $fitvids_wp_message .= 'You have enabled jQuery for your theme.'; }
 	   		echo '<div id="message" class="updated below-h2"><p>FitVids is updated. ', $fitvids_wp_message ,'</p></div>';
 	   	}
-	   	elseif(get_option('fitvids_wp_selector') == '') {
-	   		add_option('fitvids_wp_jq', 'false');
-	   		add_option('fitvids_wp_selector', '.post');
-	   	}
 	    ?>
 	    
 	    <form method="post" action="<?php echo esc_attr($_SERVER["REQUEST_URI"]); ?>">
@@ -99,7 +95,7 @@ class fitvids_wp {
 	    <tr>
 		    <th><label for="fitvids_wp_selector">Enter jQuery Selector</label></th>
 		    <td>
-		    	<input id="fitvids_wp_selector" value="<?php echo get_option('fitvids_wp_selector'); ?>" name="fitvids_wp_selector" type="text"> <a href="http://api.jquery.com/class-selector/" target="_blank">Selector Help</a>
+		    	<input id="fitvids_wp_selector" value="<?php echo get_option('fitvids_wp_selector'); ?>" name="fitvids_wp_selector" type="text"> <a href="http://www.w3schools.com/jquery/jquery_selectors.asp" target="_blank">Need help?</a>
 	    	</td>
     	</tr>	
 	    </tbody>
