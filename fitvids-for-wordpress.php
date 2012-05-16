@@ -3,7 +3,7 @@
 Plugin Name: FitVids for WordPress
 Plugin URI: http://wordpress.org/extend/plugins/fitvids-for-wordpress/
 Description: This plugin makes videos responsive using the FitVids jQuery plugin on WordPress.
-Version: 1.0.1
+Version: 2.0
 Tags: videos, fitvids, responsive
 Author URI: http://kevindees.cc
 
@@ -11,8 +11,8 @@ Author URI: http://kevindees.cc
 |                                                                    |
 | License: GPL                                                       |
 |                                                                    |
-| Dashboard Cleanup - cleaning up the wordpress dashboard.           |
-| Copyright (C) 2011, Kevin Dees,                                    |
+| FitVids for WordPress - makes videos responsive.           |
+| Copyright (C) 2012, Kevin Dees,                                    |
 | http://kevindees.cc                                               |
 | All rights reserved.                                               |
 |                                                                    |
@@ -50,20 +50,22 @@ class fitvids_wp {
 
 	// make menu
 	function menu() {
-		add_submenu_page('themes.php', 'FitVids for WordPress', 'FitVids', 'administrator', __FILE__,array($this, 'settings_page'), '', '');
+		add_submenu_page('themes.php', 'FitVids for WordPress', 'FitVids', 'edit_themes', __FILE__,array($this, 'settings_page'), '', '');
 	}
 
 	// create page for output and input
 	function settings_page() {
 		?>
-	    <div class="icon32" id="icon-options-general"><br></div>
+	    <div class="icon32" id="icon-themes"><br></div>
 	    <div id="fitvids-wp-page" class="wrap">
 	    
 	    <h2>FitVids for WordPress</h2>
 	    
 	    <?php
 	    // $_POST needs to be sanitized by version 1.0
-	   	if($_POST['submit']) {
+	   	if($_POST['submit'] && check_admin_referer('fitvids_action','fitvids_ref') ) {
+			  $fitvids_wp_message = '';
+
 	   		update_option('fitvids_wp_jq', addslashes($_POST['fitvids_wp_jq']));
 	   		update_option('fitvids_wp_selector', trim(addslashes($_POST['fitvids_wp_selector'])));
 	   		
@@ -73,35 +75,41 @@ class fitvids_wp {
 	    ?>
 	    
 	    <form method="post" action="<?php echo esc_attr($_SERVER["REQUEST_URI"]); ?>">
-	    <?php
-	    // settings_fields('fitvids_wp_settings_group');
-	    
+		  <?php
+		  wp_nonce_field('fitvids_action','fitvids_ref');
 	    if(get_option('fitvids_wp_jq') == 'true') { $checked = 'checked="checked"'; }
 	    ?>
-	    
-	    <table class="form-table">
+
+      <table class="form-table">
 	    <tbody>
 	    <tr>
-	    	<th><label for="fitvids_wp_jq">Add jQuery</label></th>
-		    <td>
-		    	<input 	id="fitvids_wp_jq" 
-		    			value="true" 
-		    			name="fitvids_wp_jq" 
-		    			type="checkbox" 
-		    			<?php echo $checked; ?>
-		    	>
-		    </td>
-	    </tr>	
+		  <td>
+
+		    <h3 style="font-weight: bold;">jQuery</h3>
+				<p>If you are already running jQuery 1.7+ you will not need to check the box. Note that some plugins require different versions of jQuery and may have conflicts with FitVids.</p>
+			  <label><input 	id="fitvids_wp_jq"
+			          value="true"
+			          name="fitvids_wp_jq"
+			          type="checkbox"
+			          <?php echo $checked; ?>
+			      > Add jQuery 1.7.2 from Google CDN</label>
+
+		  </td>
+	    </tr>
 	    <tr>
-		    <th><label for="fitvids_wp_selector">Enter jQuery Selector</label></th>
-		    <td>
-		    	<input id="fitvids_wp_selector" value="<?php echo get_option('fitvids_wp_selector'); ?>" name="fitvids_wp_selector" type="text"> <a href="http://www.w3schools.com/jquery/jquery_selectors.asp" target="_blank">Need help?</a>
-	    	</td>
-    	</tr>	
+		  <td>
+
+		   <h3 style="font-weight: bold;"><label for="fitvids_wp_selector">Enter jQuery Selector</label></h3>
+			 <p>Add a CSS selector for FitVids to work.</p>
+		   <input id="fitvids_wp_selector" value="<?php echo get_option('fitvids_wp_selector'); ?>" name="fitvids_wp_selector" type="text"> <a href="http://www.w3schools.com/jquery/jquery_selectors.asp" target="_blank">Need help?</a>
+
+	     <p class="submit">
+	     <input type="submit" name="submit" class="button-primary" value="Save Changes" /></p>
+
+		  </td>
+	    </tr>
 	    </tbody>
-	    </table>
-	    <p class="submit">
-	    <input type="submit" name="submit" class="button-primary" value="Save Changes" /></p>
+      </table>
 	    </form>
 	    
 	    </div>
@@ -111,8 +119,8 @@ class fitvids_wp {
     // add FitVids to site
     function fitvids_scripts() {
     	if(get_option('fitvids_wp_jq') == 'true') {
-    		wp_deregister_script( 'jquery' );
-			wp_register_script( 'jquery', 'http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js', '1.0');
+    	wp_deregister_script( 'jquery' );
+			wp_register_script( 'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', '1.0');
 			wp_enqueue_script( 'jquery' );
     	}
     	
