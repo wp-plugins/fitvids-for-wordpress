@@ -3,7 +3,7 @@
 Plugin Name: FitVids for WordPress
 Plugin URI: http://wordpress.org/extend/plugins/fitvids-for-wordpress/
 Description: This plugin makes videos responsive using the FitVids jQuery plugin on WordPress.
-Version: 2.0
+Version: 2.0.1
 Tags: videos, fitvids, responsive
 Author URI: http://kevindees.cc
 
@@ -50,7 +50,7 @@ class fitvids_wp {
 
 	// make menu
 	function menu() {
-		add_submenu_page('themes.php', 'FitVids for WordPress', 'FitVids', 'edit_themes', __FILE__,array($this, 'settings_page'), '', '');
+		add_submenu_page('themes.php', 'FitVids for WordPress', 'FitVids', 'switch_themes', __FILE__,array($this, 'settings_page'), '', '');
 	}
 
 	// create page for output and input
@@ -63,7 +63,7 @@ class fitvids_wp {
 	    
 	    <?php
 	    // $_POST needs to be sanitized by version 1.0
-	   	if($_POST['submit'] && check_admin_referer('fitvids_action','fitvids_ref') ) {
+	   	if( isset($_POST['submit']) && check_admin_referer('fitvids_action','fitvids_ref') ) {
 			  $fitvids_wp_message = '';
 
 	   		update_option('fitvids_wp_jq', addslashes($_POST['fitvids_wp_jq']));
@@ -77,6 +77,7 @@ class fitvids_wp {
 	    <form method="post" action="<?php echo esc_attr($_SERVER["REQUEST_URI"]); ?>">
 		  <?php
 		  wp_nonce_field('fitvids_action','fitvids_ref');
+		  $checked = '';
 	    if(get_option('fitvids_wp_jq') == 'true') { $checked = 'checked="checked"'; }
 	    ?>
 
