@@ -3,7 +3,7 @@
 Plugin Name: FitVids for WordPress
 Plugin URI: http://wordpress.org/extend/plugins/fitvids-for-wordpress/
 Description: This plugin makes videos responsive using the FitVids jQuery plugin on WordPress.
-Version: 2.0.1
+Version: 2.1
 Tags: videos, fitvids, responsive
 Author URI: http://kevindees.cc
 
@@ -67,7 +67,8 @@ class fitvids_wp {
 			  $fitvids_wp_message = '';
 
 	   		update_option('fitvids_wp_jq', addslashes($_POST['fitvids_wp_jq']));
-	   		update_option('fitvids_wp_selector', trim(addslashes($_POST['fitvids_wp_selector'])));
+	   		update_option('fitvids_wp_selector', esc_js(trim($_POST['fitvids_wp_selector'])));
+			  update_option('fitvids_wp_custom_selector',  esc_js(trim($_POST['fitvids_wp_custom_selector'])));
 	   		
 	   		if($_POST['fitvids_wp_jq'] != '') { $fitvids_wp_message .= 'You have enabled jQuery for your theme.'; }
 	   		echo '<div id="message" class="updated below-h2"><p>FitVids is updated. ', $fitvids_wp_message ,'</p></div>';
@@ -92,7 +93,7 @@ class fitvids_wp {
 			          value="true"
 			          name="fitvids_wp_jq"
 			          type="checkbox"
-			          <?php echo $checked; ?>
+			          <?php if(isset($checked)) echo $checked; ?>
 			      > Add jQuery 1.7.2 from Google CDN</label>
 
 		  </td>
@@ -100,12 +101,16 @@ class fitvids_wp {
 	    <tr>
 		  <td>
 
-		   <h3 style="font-weight: bold;"><label for="fitvids_wp_selector">Enter jQuery Selector</label></h3>
-			 <p>Add a CSS selector for FitVids to work.</p>
-		   <input id="fitvids_wp_selector" value="<?php echo get_option('fitvids_wp_selector'); ?>" name="fitvids_wp_selector" type="text"> <a href="http://www.w3schools.com/jquery/jquery_selectors.asp" target="_blank">Need help?</a>
+			<h3 style="font-weight: bold;"><label for="fitvids_wp_selector">Enter jQuery Selector</label></h3>
+			<p>Add a CSS selector for FitVids to work. <a href="http://www.w3schools.com/jquery/jquery_selectors.asp" target="_blank"> Need help?</a></p>
+			<p><em>jQuery(" <input id="fitvids_wp_selector" value="<?php echo get_option('fitvids_wp_selector'); ?>" name="fitvids_wp_selector" type="text"> ").fitVids();</em></p>
 
-	     <p class="submit">
-	     <input type="submit" name="submit" class="button-primary" value="Save Changes" /></p>
+			<h3 style="font-weight: bold;"><label for="fitvids_wp_custom_selector">Enter FitVids Custom Selector</label></h3>
+			<p>Add a custom selector for FitVids if you are using videos that are not supported by default. <a href="https://github.com/davatron5000/FitVids.js#add-your-own-video-vendor" target="_blank"> Need help?</a></p>
+			<p><em>jQuery().fitVids({ customSelector: " <input id="fitvids_wp_custom_selector" value="<?php echo stripslashes(get_option('fitvids_wp_custom_selector')); ?>" name="fitvids_wp_custom_selector" type="text"> "});</em></p>
+
+
+			<p class="submit"><input type="submit" name="submit" class="button-primary" value="Save Changes" /></p>
 
 		  </td>
 	    </tr>
@@ -128,14 +133,14 @@ class fitvids_wp {
     	// add fitvids
     	wp_register_script( 'fitvids', plugins_url('/jquery.fitvids.js', __FILE__), array('jquery'), '1.0', true);    	
     	wp_enqueue_script( 'fitvids');
-    	add_action('wp_footer', array($this, 'add_fitthem'));	
+    	add_action('wp_print_footer_scripts', array($this, 'add_fitthem'));
     } // end fitvids_scripts
     
     // slecetor script
     function add_fitthem() { ?>
     	<script type="text/javascript">
     	jQuery(document).ready(function() {
-    		jQuery('<?php echo get_option('fitvids_wp_selector'); ?>').fitVids();
+    		jQuery('<?php echo get_option('fitvids_wp_selector'); ?>').fitVids({ customSelector: "<?php echo stripslashes(get_option('fitvids_wp_custom_selector')); ?>"});
     	});
     	</script><?php
     }    
